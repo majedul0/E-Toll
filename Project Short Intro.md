@@ -1,1 +1,0 @@
-The E-Toll System is an online platform that lets vehicle owners register their vehicles, log in, and pay tolls without waiting at toll booths. It helps reduce traffic, saves time, and makes toll collection faster and more organized. The system includes basic features like registration, login, toll payment, and record tracking for a smooth and modern toll experience.
