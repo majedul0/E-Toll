@@ -9,8 +9,8 @@
         
         <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
             <div class="form-group">
-                <label class="form-label">Phone Number or Email</label>
-                <input type="text" id="login-identifier" class="form-input" placeholder="Enter phone or email" required>
+                <label class="form-label">Phone Number</label>
+                <input type="text" id="login-identifier" class="form-input" placeholder="Enter phone number" required>
             </div>
             
             <div class="form-group">
