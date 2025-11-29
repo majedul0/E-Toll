@@ -3,6 +3,7 @@
 @section('title', 'Login - E-Toll')
 
 @section('content')
+<!---- Login Functionality--- -->
 <div style="max-width: 500px; margin: 3rem auto;">
     <div class="card">
         <h2 class="card-title">Citizen Login</h2>
