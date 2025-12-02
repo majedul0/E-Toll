@@ -109,7 +109,7 @@
             <tbody>
                 <tr>
                     <td>TXN123456</td>
-                    <td>user@example.com</td>
+                    <td>saif@example.com</td>
                     <td>Dhaka → Chittagong</td>
                     <td>৳500</td>
                     <td>Bkash</td>
@@ -167,8 +167,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Jane Smith</td>
-                    <td>jane@example.com</td>
+                    <td>Sahik</td>
+                    <td>sahik@gmail.com</td>
                     <td>01812345678</td>
                     <td>8</td>
                     <td>৳3,200</td>
