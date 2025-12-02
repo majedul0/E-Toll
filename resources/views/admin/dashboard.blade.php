@@ -157,8 +157,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>John Doe</td>
-                    <td>john@example.com</td>
+                    <td>Jeon</td>
+                    <td>jeon@gmail.com</td>
                     <td>01712345678</td>
                     <td>15</td>
                     <td>৳7,500</td>
