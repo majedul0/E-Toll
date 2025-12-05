@@ -7,6 +7,10 @@
     
     <title>@yield('title', 'E-Toll - Bangladesh Government')</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/etoll.css') }}">
     
