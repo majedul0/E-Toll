@@ -27,11 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::view('/route-selection', 'route-selection')->name('route-selection');
     Route::view('/payment', 'payment')->name('payment');
-    Route::view('/qr-code', 'qr-code')->name('qr-code');
     Route::view('/qr-verification', 'qr-verification')->name('qr-verification');
 
     Route::post('/payment/session', [PaymentController::class, 'createSession'])->name('payment.session');
 });
+
+// Public QR code view (shown after payment success - no auth required)
+Route::get('/qr-code/view', [PaymentController::class, 'showQrCode'])->name('qr-code.view');
 
 // Payment gateway callback routes (must accept both GET and POST, no auth required for gateway redirects)
 Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success'])->name('payment.success');

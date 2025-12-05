@@ -104,8 +104,21 @@ class PaymentController extends Controller
         }
         
         // TODO: In production, validate the payment with SSLCommerz and store in database
-        // For now, redirect to QR code page
-        return redirect('/qr-code?txn=' . $tranId);
+        // For now, redirect to public QR code view
+        return redirect('/qr-code/view?txn=' . $tranId);
+    }
+
+    public function showQrCode(Request $request)
+    {
+        // Public method to show QR code (no auth required)
+        // This is called after payment success callback
+        $tranId = $request->input('txn');
+        
+        if (!$tranId) {
+            return redirect('/payment')->withErrors(['payment' => 'No transaction found.']);
+        }
+        
+        return view('qr-code', ['transactionId' => $tranId]);
     }
 
     public function fail(Request $request)
