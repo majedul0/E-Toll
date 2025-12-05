@@ -31,10 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::view('/qr-verification', 'qr-verification')->name('qr-verification');
 
     Route::post('/payment/session', [PaymentController::class, 'createSession'])->name('payment.session');
-    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
-    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 });
+
+// Payment gateway callback routes (must accept both GET and POST, no auth required for gateway redirects)
+Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::match(['get', 'post'], '/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+Route::match(['get', 'post'], '/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
 // Official-only area
 Route::middleware(['auth', 'official'])->group(function () {

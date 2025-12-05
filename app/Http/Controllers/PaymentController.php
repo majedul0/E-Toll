@@ -95,16 +95,30 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        return redirect('/qr-code?txn='.($request->input('tran_id') ?? $request->input('value_c')));
+        // SSLCommerz sends back transaction data via POST
+        // Extract transaction ID from request (could be tran_id or value_a/value_b/value_c)
+        $tranId = $request->input('tran_id') ?? $request->input('value_c');
+        
+        if (!$tranId) {
+            return redirect('/payment')->withErrors(['payment' => 'Invalid transaction ID.']);
+        }
+        
+        // TODO: In production, validate the payment with SSLCommerz and store in database
+        // For now, redirect to QR code page
+        return redirect('/qr-code?txn=' . $tranId);
     }
 
-    public function fail()
+    public function fail(Request $request)
     {
-        return redirect('/payment')->withErrors(['payment' => 'Payment failed or was cancelled.']);
+        // Log failed payment for debugging
+        \Log::warning('Payment failed', ['data' => $request->all()]);
+        return redirect('/payment')->withErrors(['payment' => 'Payment failed. Please try again.']);
     }
 
-    public function cancel()
+    public function cancel(Request $request)
     {
+        // Log cancelled payment for debugging
+        \Log::info('Payment cancelled', ['data' => $request->all()]);
         return redirect('/payment')->withErrors(['payment' => 'Payment cancelled.']);
     }
 }
