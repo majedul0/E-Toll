@@ -11,6 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Exempt payment gateway callbacks from CSRF verification (they come from external gateway)
+        $middleware->validateCsrfTokens(except: [
+            'payment/success',
+            'payment/fail',
+            'payment/cancel',
+        ]);
+        
         $middleware->alias([
             'official' => \App\Http\Middleware\EnsureOfficial::class,
         ]);
