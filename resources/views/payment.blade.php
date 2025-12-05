@@ -22,7 +22,7 @@
         
         <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">Select Payment Method</h3>
         <div style="margin-bottom: 1rem; color: var(--text-gray); font-size: 0.9rem;">
-            Sandbox demo: payments are simulated (SSLCommerz sandbox) for Bkash, Nagad, Rocket, and Card.
+            SSLCommerz sandbox: Use test credentials to complete payment. You'll receive a QR code after successful payment.
         </div>
         
         <input type="hidden" id="selected-payment" value="">
@@ -147,19 +147,47 @@ function processPayment() {
         return;
     }
     
-    const spinnerText = `Connecting to SSL sandbox (${paymentMethod.toUpperCase()})...`;
+    const spinnerText = `Connecting to SSL Commerz (${paymentMethod.toUpperCase()})...`;
     showAlert(spinnerText, 'info');
     
-    setTimeout(() => {
-        // Fake gateway response
-        const transactionId = `SANDBOX-${paymentMethod.toUpperCase()}-${Date.now()}`;
-        sessionStorage.setItem('transactionId', transactionId);
-        sessionStorage.setItem('paymentMethod', paymentMethod);
-        showAlert('Payment authorized (sandbox). Generating QR...', 'success');
-        setTimeout(() => {
-            window.location.href = `/qr-code?txn=${transactionId}`;
-        }, 800);
-    }, 1500);
+    // Get route and amount from sessionStorage
+    const origin = sessionStorage.getItem('routeOrigin');
+    const destination = sessionStorage.getItem('routeDestination');
+    const amount = sessionStorage.getItem('tollAmount');
+    
+    // Call the real PaymentController.createSession endpoint
+    fetch('/payment/session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            amount: amount || 100,
+            method: paymentMethod,
+            origin: origin,
+            destination: destination
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'SUCCESS' && data.gateway_url) {
+            // Store transaction ID for later use
+            sessionStorage.setItem('transactionId', data.tran_id);
+            sessionStorage.setItem('paymentMethod', paymentMethod);
+            showAlert('Redirecting to payment gateway...', 'success');
+            // Redirect to SSLCommerz gateway
+            setTimeout(() => {
+                window.location.href = data.gateway_url;
+            }, 500);
+        } else {
+            showAlert(`Payment error: ${data.failedreason || 'Unknown error'}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Payment gateway error. Please try again.', 'error');
+    });
 }
 </script>
 @endsection
