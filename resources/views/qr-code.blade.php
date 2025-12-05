@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (txnId) {
         document.getElementById('transaction-id').textContent = txnId;
         
-        // Load route info
+        // Load route info from sessionStorage (if available from payment flow)
         const origin = sessionStorage.getItem('routeOrigin');
         const destination = sessionStorage.getItem('routeDestination');
         const amount = sessionStorage.getItem('tollAmount');
@@ -66,11 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('qr-amount').textContent = amount;
         }
         
+        // Generate QR code with transaction data
         displayQRCode({
             txnId,
-            origin,
-            destination,
-            amount
+            origin: origin || 'N/A',
+            destination: destination || 'N/A',
+            amount: amount || 'N/A'
         });
     } else {
         showAlert('No transaction found', 'error');
@@ -83,33 +84,51 @@ document.addEventListener('DOMContentLoaded', function() {
 function displayQRCode({ txnId, origin, destination, amount }) {
     const qrContainer = document.getElementById('qr-code');
 
+    // Create QR code payload with transaction details
     const payload = JSON.stringify({
-        txn: txnId,
-        route: origin && destination ? `${origin} -> ${destination}` : null,
-        amount: amount || null,
-        ts: Date.now()
+        txn_id: txnId,
+        route: origin !== 'N/A' && destination !== 'N/A' ? `${origin} → ${destination}` : null,
+        amount: amount !== 'N/A' ? amount : null,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
     });
 
     qrContainer.innerHTML = '';
 
+    // Check if QRCode library is loaded
     if (typeof QRCode === 'undefined') {
-        qrContainer.innerHTML = `<p style="padding:1rem;">QR library not loaded.</p>`;
+        qrContainer.innerHTML = `<div style="padding:2rem; text-align:center; color:#dc3545;"><p>QR Code library not loaded. Please refresh the page.</p></div>`;
+        console.error('QRCode library not found');
         return;
     }
 
-    new QRCode(qrContainer, {
-        text: payload,
-        width: 240,
-        height: 240,
-        colorDark: "#0f5132",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    try {
+        new QRCode(qrContainer, {
+            text: payload,
+            width: 280,
+            height: 280,
+            colorDark: "#0f5132",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        console.log('QR Code generated successfully');
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        qrContainer.innerHTML = `<div style="padding:2rem; text-align:center; color:#dc3545;"><p>Error generating QR code. Please try again.</p></div>`;
+    }
 }
 
 function downloadQR() {
-    showAlert('QR Code download initiated', 'success');
-    // Implement actual download functionality
+    const canvas = document.querySelector('#qr-code canvas');
+    if (canvas) {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'e-toll-qr-code.png';
+        link.click();
+        showAlert('QR Code downloaded successfully!', 'success');
+    } else {
+        showAlert('QR Code not found. Please refresh the page.', 'error');
+    }
 }
 
 function printQR() {
