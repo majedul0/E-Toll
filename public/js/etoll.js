@@ -1,13 +1,50 @@
 // E-Toll System - Main JavaScript File
 
 // Language Toggle
-function toggleLanguage(lang) {
+const translations = {
+    eng: {
+        help_desk: 'Help Desk',
+        dashboard: 'Dashboard',
+        logout: 'Logout',
+        citizen_login: 'Citizen Login',
+        official_login: 'Official Login',
+        registration: 'Registration',
+        subtitle: 'সরকারি সেবা এক ঠিকানায়',
+        title: 'E-Toll',
+    },
+    beng: {
+        help_desk: 'হেল্প ডেস্ক',
+        dashboard: 'ড্যাশবোর্ড',
+        logout: 'লগআউট',
+        citizen_login: 'নাগরিক লগইন',
+        official_login: 'অফিসিয়াল লগইন',
+        registration: 'নিবন্ধন',
+        subtitle: 'সরকারি সেবা এক ঠিকানায়',
+        title: 'ই-টোল',
+    },
+};
+
+function applyTranslations(lang) {
+    const dict = translations[lang] || translations.eng;
+    document.documentElement.lang = lang === 'beng' ? 'bn' : 'en';
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) {
+            el.textContent = dict[key];
+        }
+    });
+}
+
+function toggleLanguage(lang, btnEl) {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
-    // Here you would implement actual language switching
-    console.log('Language switched to:', lang);
+    if (btnEl) {
+        btnEl.classList.add('active');
+    }
+    localStorage.setItem('etoll_lang', lang);
+    applyTranslations(lang);
 }
 
 // OTP Verification
@@ -64,25 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Route Selection
-function selectRoute() {
-    const origin = document.getElementById('origin').value;
-    const destination = document.getElementById('destination').value;
-    
-    if (!origin || !destination) {
-        showAlert('Please select origin and destination', 'error');
-        return;
-    }
-    
-    // Calculate toll (mock calculation)
-    const tollAmount = calculateToll(origin, destination);
-    document.getElementById('toll-amount').textContent = '৳' + tollAmount;
-    document.getElementById('route-details-section').classList.remove('hidden');
-    
-    // Show map (mock)
-    updateMap(origin, destination);
-}
-
 function calculateToll(origin, destination) {
     // Mock toll calculation
     const routes = {
@@ -97,26 +115,73 @@ function calculateToll(origin, destination) {
 
 function updateMap(origin, destination) {
     const mapContainer = document.getElementById('map-container');
-    mapContainer.innerHTML = `
-        <div style="text-align: center; padding: 2rem;">
-            <h3 style="color: var(--primary-green); margin-bottom: 1rem;">Route Map</h3>
-            <p><strong>From:</strong> ${origin}</p>
-            <p><strong>To:</strong> ${destination}</p>
-            <div style="margin-top: 2rem; padding: 2rem; background: white; border-radius: 10px;">
-                <p style="color: var(--text-gray);">Map visualization would appear here</p>
-                <p style="color: var(--text-gray); font-size: 0.9rem;">Integration with Google Maps or similar service</p>
+    if (!mapContainer) return;
+
+    if (typeof L === 'undefined') {
+        mapContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <p style="color: var(--text-gray);">Map library not loaded. Please check your internet connection.</p>
             </div>
-        </div>
-    `;
+        `;
+        return;
+    }
+
+    if (!window.routeMap) {
+        window.routeMap = L.map('map-container').setView([23.777, 90.399], 6.5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(window.routeMap);
+    }
+
+    const coords = {
+        Dhaka: [23.777, 90.399],
+        Chittagong: [22.347, 91.812],
+        Sylhet: [24.8949, 91.8687],
+        Rajshahi: [24.3745, 88.6042],
+        Khulna: [22.8456, 89.5403],
+        Barisal: [22.7010, 90.3535],
+    };
+
+    const originCoord = coords[origin];
+    const destCoord = coords[destination];
+
+    if (!originCoord || !destCoord) {
+        mapContainer.innerHTML = `<p style="padding:1rem;">Coordinates not found for the selected cities.</p>`;
+        return;
+    }
+
+    // Clear previous layers
+    if (window.routeLayer) {
+        window.routeMap.removeLayer(window.routeLayer);
+    }
+    if (window.routeMarkers) {
+        window.routeMarkers.forEach(m => window.routeMap.removeLayer(m));
+    }
+
+    const points = [originCoord, destCoord];
+    window.routeMarkers = [
+        L.marker(originCoord).bindPopup(`Origin: ${origin}`),
+        L.marker(destCoord).bindPopup(`Destination: ${destination}`)
+    ];
+    window.routeMarkers.forEach(m => m.addTo(window.routeMap));
+
+    window.routeLayer = L.polyline(points, { color: '#0f9d58', weight: 5, opacity: 0.8 }).addTo(window.routeMap);
+    window.routeMap.fitBounds(window.routeLayer.getBounds(), { padding: [40, 40] });
 }
 
 // Payment Method Selection
-function selectPaymentMethod(method) {
-    document.querySelectorAll('.payment-method').forEach(el => {
-        el.classList.remove('selected');
+function selectPaymentMethod(method, el) {
+    document.querySelectorAll('.payment-method').forEach(btn => {
+        btn.classList.remove('selected');
     });
-    event.currentTarget.classList.add('selected');
-    document.getElementById('selected-payment').value = method;
+    if (el) {
+        el.classList.add('selected');
+    }
+    const selectedField = document.getElementById('selected-payment');
+    if (selectedField) {
+        selectedField.value = method;
+    }
 }
 
 function processPayment() {
@@ -127,14 +192,57 @@ function processPayment() {
         return;
     }
     
-    // Simulate payment processing
-    showAlert('Processing payment...', 'info');
-    
-    setTimeout(() => {
-        // Generate QR code
-        const transactionId = 'TXN' + Date.now();
-        generateQRCode(transactionId);
-    }, 2000);
+    const accountNumber = document.getElementById('account-number').value;
+    if (!accountNumber) {
+        showAlert('Please enter account/card number', 'error');
+        return;
+    }
+
+    const amountText = sessionStorage.getItem('tollAmount') || '';
+    const amount = parseFloat(amountText.toString().replace(/[^\d.]/g, '')) || 0;
+    const origin = sessionStorage.getItem('routeOrigin') || '';
+    const destination = sessionStorage.getItem('routeDestination') || '';
+
+    if (!amount) {
+        showAlert('Missing amount. Please reselect the route.', 'error');
+        return;
+    }
+
+    showAlert(`Connecting to SSL sandbox (${paymentMethod.toUpperCase()})...`, 'info');
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    fetch('/payment/session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrf || ''
+        },
+        body: JSON.stringify({
+            amount,
+            method: paymentMethod,
+            origin,
+            destination,
+            account: accountNumber
+        })
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok || data.status !== 'SUCCESS') {
+            const reason = data.failedreason || 'Payment session failed';
+            showAlert(reason, 'error');
+            return;
+        }
+        if (data.gateway_url) {
+            sessionStorage.setItem('transactionId', data.tran_id || '');
+            window.location.href = data.gateway_url;
+        } else {
+            showAlert('Gateway URL missing in response', 'error');
+        }
+    })
+    .catch(() => {
+        showAlert('Network error while creating payment session', 'error');
+    });
 }
 
 function generateQRCode(transactionId) {
@@ -292,6 +400,38 @@ function validateForm(formId) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Apply saved language preference
+    const savedLang = localStorage.getItem('etoll_lang') || 'eng';
+    const activeBtn = document.querySelector(`.lang-btn[data-lang="${savedLang}"]`);
+    if (activeBtn) {
+        toggleLanguage(savedLang, activeBtn);
+    } else {
+        applyTranslations(savedLang);
+    }
+
+    window.calculateDistanceKm = function (from, to) {
+        const coords = {
+            Dhaka: [23.777, 90.399],
+            Chittagong: [22.347, 91.812],
+            Sylhet: [24.8949, 91.8687],
+            Rajshahi: [24.3745, 88.6042],
+            Khulna: [22.8456, 89.5403],
+            Barisal: [22.7010, 90.3535],
+        };
+        const a = coords[from];
+        const b = coords[to];
+        if (!a || !b) return '-';
+        const R = 6371;
+        const toRad = d => d * Math.PI / 180;
+        const dLat = toRad(b[0] - a[0]);
+        const dLon = toRad(b[1] - a[1]);
+        const lat1 = toRad(a[0]);
+        const lat2 = toRad(b[0]);
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+        const distance = 2 * R * Math.asin(Math.sqrt(h));
+        return distance.toFixed(1);
+    };
+
     // Check if QR code page
     const urlParams = new URLSearchParams(window.location.search);
     const txnId = urlParams.get('txn');

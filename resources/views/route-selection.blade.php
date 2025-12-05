@@ -3,6 +3,14 @@
 @section('title', 'Select Route - E-Toll')
 
 @section('content')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+@endpush
+
+@push('scripts')
+<script src="{{ asset('vendor/leaflet/leaflet.js') }}"></script>
+@endpush
+
 <div class="card">
     <h2 class="card-title">Select Your Route</h2>
     
@@ -108,8 +116,8 @@ function selectRoute() {
     const tollAmount = calculateToll(origin, destination);
     document.getElementById('toll-amount').textContent = '৳' + tollAmount;
     
-    // Mock distance
-    const distance = Math.floor(Math.random() * 200) + 100;
+    // Distance via haversine of predefined city coords
+    const distance = window.calculateDistanceKm(origin, destination);
     document.getElementById('distance').textContent = distance;
     
     // Show route details

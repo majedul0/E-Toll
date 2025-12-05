@@ -21,29 +21,32 @@
         </div>
         
         <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">Select Payment Method</h3>
+        <div style="margin-bottom: 1rem; color: var(--text-gray); font-size: 0.9rem;">
+            Sandbox demo: payments are simulated (SSLCommerz sandbox) for Bkash, Nagad, Rocket, and Card.
+        </div>
         
         <input type="hidden" id="selected-payment" value="">
         
         <div class="payment-methods">
-            <div class="payment-method" onclick="selectPaymentMethod('bkash')">
+            <div class="payment-method" onclick="selectPaymentMethod('bkash', this)">
                 <div class="payment-icon">💳</div>
                 <div class="payment-name">Bkash</div>
             </div>
-            <div class="payment-method" onclick="selectPaymentMethod('nagad')">
+            <div class="payment-method" onclick="selectPaymentMethod('nagad', this)">
                 <div class="payment-icon">💳</div>
                 <div class="payment-name">Nagad</div>
             </div>
-            <div class="payment-method" onclick="selectPaymentMethod('rocket')">
+            <div class="payment-method" onclick="selectPaymentMethod('rocket', this)">
                 <div class="payment-icon">💳</div>
                 <div class="payment-name">Rocket</div>
             </div>
-            <div class="payment-method" onclick="selectPaymentMethod('card')">
+            <div class="payment-method" onclick="selectPaymentMethod('card', this)">
                 <div class="payment-icon">💳</div>
                 <div class="payment-name">Card</div>
             </div>
         </div>
         
-        <div id="payment-details" class="hidden" style="margin-top: 2rem;">
+        <div id="payment-details" style="margin-top: 2rem;">
             <div class="form-group">
                 <label class="form-label">Account Number / Card Number</label>
                 <input type="text" id="account-number" class="form-input" placeholder="Enter account/card number" required>
@@ -68,12 +71,13 @@
             </div>
             
             <button class="btn btn-primary" onclick="processPayment()" style="width: 100%;">Pay Now</button>
+            <button class="btn" onclick="processPayment()" style="width: 100%; margin-top: 0.75rem; background: var(--border-color); color: var(--text-dark);">Continue</button>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+function initPaymentPage() {
     // Load route info from sessionStorage
     const origin = sessionStorage.getItem('routeOrigin');
     const destination = sessionStorage.getItem('routeDestination');
@@ -86,17 +90,35 @@ document.addEventListener('DOMContentLoaded', function() {
     if (amount) {
         document.getElementById('payment-amount').textContent = amount;
     }
-});
 
-function selectPaymentMethod(method) {
-    document.querySelectorAll('.payment-method').forEach(el => {
-        el.classList.remove('selected');
+    // Default select first method
+    const firstMethod = document.querySelector('.payment-method');
+    if (firstMethod) {
+        selectPaymentMethod(firstMethod.querySelector('.payment-name').textContent.toLowerCase(), firstMethod);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPaymentPage);
+} else {
+    initPaymentPage();
+}
+
+function selectPaymentMethod(method, el) {
+    document.querySelectorAll('.payment-method').forEach(btn => {
+        btn.classList.remove('selected');
     });
-    event.currentTarget.classList.add('selected');
+    if (el) {
+        el.classList.add('selected');
+    }
     document.getElementById('selected-payment').value = method;
     
     // Show payment details
-    document.getElementById('payment-details').classList.remove('hidden');
+    const paymentDetails = document.getElementById('payment-details');
+    if (paymentDetails) {
+        paymentDetails.classList.remove('hidden');
+        paymentDetails.style.display = 'block';
+    }
     
     // Show/hide relevant fields
     const pinGroup = document.getElementById('pin-group');
@@ -125,17 +147,19 @@ function processPayment() {
         return;
     }
     
-    // Simulate payment processing
-    showAlert('Processing payment...', 'info');
+    const spinnerText = `Connecting to SSL sandbox (${paymentMethod.toUpperCase()})...`;
+    showAlert(spinnerText, 'info');
     
     setTimeout(() => {
-        const transactionId = 'TXN' + Date.now();
+        // Fake gateway response
+        const transactionId = `SANDBOX-${paymentMethod.toUpperCase()}-${Date.now()}`;
         sessionStorage.setItem('transactionId', transactionId);
-        showAlert('Payment successful!', 'success');
+        sessionStorage.setItem('paymentMethod', paymentMethod);
+        showAlert('Payment authorized (sandbox). Generating QR...', 'success');
         setTimeout(() => {
             window.location.href = `/qr-code?txn=${transactionId}`;
-        }, 1000);
-    }, 2000);
+        }, 800);
+    }, 1500);
 }
 </script>
 @endsection

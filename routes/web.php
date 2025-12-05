@@ -1,56 +1,42 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
-// Homepage
-Route::get('/', function () {
-    return view('home');
+// Public pages
+Route::view('/', 'home')->name('home');
+Route::view('/help', 'help')->name('help');
+
+// Authentication
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+
+    Route::get('/official-login', [AuthController::class, 'showOfficialLogin'])->name('official.login');
+    Route::post('/official-login', [AuthController::class, 'officialLogin'])->name('official.login.submit');
 });
 
-// Authentication Routes
-Route::get('/login', function () {
-    return view('auth.login');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Authenticated citizen features
+Route::middleware('auth')->group(function () {
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::view('/route-selection', 'route-selection')->name('route-selection');
+    Route::view('/payment', 'payment')->name('payment');
+    Route::view('/qr-code', 'qr-code')->name('qr-code');
+    Route::view('/qr-verification', 'qr-verification')->name('qr-verification');
+
+    Route::post('/payment/session', [PaymentController::class, 'createSession'])->name('payment.session');
+    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 });
 
-Route::get('/register', function () {
-    return view('auth.register');
-});
-
-Route::get('/official-login', function () {
-    return view('auth.login'); // Can be customized for official login
-});
-
-// Route Selection
-Route::get('/route-selection', function () {
-    return view('route-selection');
-});
-
-// Payment
-Route::get('/payment', function () {
-    return view('payment');
-});
-
-// QR Code
-Route::get('/qr-code', function () {
-    return view('qr-code');
-});
-
-// QR Verification (for toll booth operators)
-Route::get('/qr-verification', function () {
-    return view('qr-verification');
-});
-
-// Admin Dashboard
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-});
-
-// Help Desk
-Route::get('/help', function () {
-    return view('help');
-});
-
-// Dashboard (for logged in users)
-Route::get('/dashboard', function () {
-    return view('dashboard');
+// Official-only area
+Route::middleware(['auth', 'official'])->group(function () {
+    Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
 });

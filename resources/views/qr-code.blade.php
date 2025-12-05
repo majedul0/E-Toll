@@ -3,6 +3,10 @@
 @section('title', 'QR Code - E-Toll')
 
 @section('content')
+@push('scripts')
+<script src="{{ asset('vendor/qrcodejs/qrcode.min.js') }}"></script>
+@endpush
+
 <div style="max-width: 600px; margin: 3rem auto;">
     <div class="qr-container">
         <h2 class="card-title">Your QR Code</h2>
@@ -62,10 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('qr-amount').textContent = amount;
         }
         
-        // Generate QR code (in production, use a QR code library)
-        setTimeout(() => {
-            displayQRCode(txnId);
-        }, 1000);
+        displayQRCode({
+            txnId,
+            origin,
+            destination,
+            amount
+        });
     } else {
         showAlert('No transaction found', 'error');
         setTimeout(() => {
@@ -74,19 +80,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function displayQRCode(transactionId) {
+function displayQRCode({ txnId, origin, destination, amount }) {
     const qrContainer = document.getElementById('qr-code');
-    
-    // In production, use a QR code library like qrcode.js
-    // For demo, showing a styled placeholder
-    qrContainer.innerHTML = `
-        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
-            <div style="width: 200px; height: 200px; background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 50% / 20px 20px; border: 3px solid var(--primary-green); border-radius: 10px; position: relative;">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: var(--primary-green); border-radius: 5px;"></div>
-            </div>
-            <p style="color: var(--text-gray); font-size: 0.9rem;">QR Code Generated</p>
-        </div>
-    `;
+
+    const payload = JSON.stringify({
+        txn: txnId,
+        route: origin && destination ? `${origin} -> ${destination}` : null,
+        amount: amount || null,
+        ts: Date.now()
+    });
+
+    qrContainer.innerHTML = '';
+
+    if (typeof QRCode === 'undefined') {
+        qrContainer.innerHTML = `<p style="padding:1rem;">QR library not loaded.</p>`;
+        return;
+    }
+
+    new QRCode(qrContainer, {
+        text: payload,
+        width: 240,
+        height: 240,
+        colorDark: "#0f5132",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
 }
 
 function downloadQR() {
