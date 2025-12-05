@@ -8,15 +8,39 @@
     <div class="card">
         <h2 class="card-title">Citizen Login</h2>
         
-        <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+        @if ($errors->any())
+            <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 1rem; margin-bottom: 1.5rem; color: #721c24;">
+                @foreach ($errors->all() as $error)
+                    <p style="margin: 0.5rem 0;">{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+        
+        <form method="POST" action="{{ route('login.submit') }}">
+            @csrf
             <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="text" id="login-identifier" class="form-input" placeholder="Enter phone number" required>
+                <label class="form-label" for="identifier">Phone Number or Email</label>
+                <input
+                    type="text"
+                    id="identifier"
+                    name="identifier"
+                    class="form-input"
+                    value="{{ old('identifier') }}"
+                    placeholder="Enter phone or email"
+                    required
+                >
             </div>
             
             <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" id="login-password" class="form-input" placeholder="Enter password" required>
+                <label class="form-label" for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-input"
+                    placeholder="Enter password"
+                    required
+                >
             </div>
             
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
@@ -27,24 +51,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function handleLogin() {
-    if (!validateForm('login-form')) {
-        return;
-    }
-    
-    const identifier = document.getElementById('login-identifier').value;
-    const password = document.getElementById('login-password').value;
-    
-    // Simulate login
-    showAlert('Logging in...', 'info');
-    
-    setTimeout(() => {
-        showAlert('Login successful!', 'success');
-        window.location.href = '/dashboard';
-    }, 1000);
-}
-</script>
 @endsection
 
