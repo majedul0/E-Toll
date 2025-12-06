@@ -5,7 +5,7 @@
 @section('content')
 <div style="max-width: 600px; margin: 3rem auto;">
     <div class="card">
-        <h2 class="card-title">User Registration</h2>
+        <h2 class="card-title">User Registration Here</h2>
         
         <form id="register-form" method="POST" action="{{ route('register.submit') }}">
             @csrf
