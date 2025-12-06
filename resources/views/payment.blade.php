@@ -48,13 +48,13 @@
         
         <div id="payment-details" style="margin-top: 2rem;">
             <div class="form-group">
-                <label class="form-label">Account Number / Card Number</label>
+                <label class="form-label">Account Number</label>
                 <input type="text" id="account-number" class="form-input" placeholder="Enter account/card number" required>
             </div>
             
             <div class="form-group" id="pin-group" style="display: none;">
                 <label class="form-label">PIN</label>
-                <input type="password" id="pin" class="form-input" placeholder="Enter PIN" maxlength="4">
+                <input type="password" id="pin" class="form-input" placeholder="Enter your pin" maxlength="4">
             </div>
             
             <div class="form-group" id="card-details" style="display: none;">
