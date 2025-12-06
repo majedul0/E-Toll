@@ -42,7 +42,7 @@
             </div>
             <div class="payment-method" onclick="selectPaymentMethod('card', this)">
                 <div class="payment-icon">💳</div>
-                <div class="payment-name">Card</div>
+                <div class="payment-name">Visa Card</div>
             </div>
         </div>
         
