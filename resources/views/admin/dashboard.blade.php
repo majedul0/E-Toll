@@ -5,7 +5,7 @@
 @section('content')
 <h1 style="color: var(--primary-green); margin-bottom: 2rem;">Admin Dashboard</h1>
 
-<!-- Statistics Cards -->
+<!-- Cards -->
 <div class="dashboard-grid">
     <div class="dashboard-card">
         <h3>Total Transactions</h3>
