@@ -120,7 +120,7 @@ function selectPaymentMethod(method, el) {
         paymentDetails.style.display = 'block';
     }
     
-    // Show/hide relevant fields
+    
     const pinGroup = document.getElementById('pin-group');
     const cardDetails = document.getElementById('card-details');
     
@@ -150,12 +150,11 @@ function processPayment() {
     const spinnerText = `Connecting to SSL Commerz (${paymentMethod.toUpperCase()})...`;
     showAlert(spinnerText, 'info');
     
-    // Get route and amount from sessionStorage
+    
     const origin = sessionStorage.getItem('routeOrigin');
     const destination = sessionStorage.getItem('routeDestination');
     const amount = sessionStorage.getItem('tollAmount');
     
-    // Call the real PaymentController.createSession endpoint
     fetch('/payment/session', {
         method: 'POST',
         headers: {
@@ -176,7 +175,7 @@ function processPayment() {
             sessionStorage.setItem('transactionId', data.tran_id);
             sessionStorage.setItem('paymentMethod', paymentMethod);
             showAlert('Redirecting to payment gateway...', 'success');
-            // Redirect to SSLCommerz gateway
+            // Redirect to SSLCommerz gateway here 
             setTimeout(() => {
                 window.location.href = data.gateway_url;
             }, 500);
