@@ -127,7 +127,7 @@
                 </tr>
                 <tr>
                     <td>TXN123454</td>
-                    <td>user3@example.com</td>
+                    <td>Zion sir@example.com</td>
                     <td>Chittagong → Sylhet</td>
                     <td>৳600</td>
                     <td>Card</td>
