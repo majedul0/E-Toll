@@ -32,7 +32,7 @@
     </div>
 </div>
 
-<!-- Manage Toll Routes -->
+<!-- Managed the Toll Routes -->
 <div class="card">
     <h2 class="card-title">Manage Toll Routes</h2>
     
