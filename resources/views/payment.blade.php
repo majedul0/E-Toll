@@ -171,11 +171,11 @@ function processPayment() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'SUCCESS' && data.gateway_url) {
-            // Store transaction ID for later use
+            
             sessionStorage.setItem('transactionId', data.tran_id);
             sessionStorage.setItem('paymentMethod', paymentMethod);
             showAlert('Redirecting to payment gateway...', 'success');
-            // Redirect to SSLCommerz gateway here 
+            
             setTimeout(() => {
                 window.location.href = data.gateway_url;
             }, 500);
