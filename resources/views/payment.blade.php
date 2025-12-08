@@ -78,7 +78,7 @@
 
 <script>
 function initPaymentPage() {
-    // Load route info from sessionStorage
+    
     const origin = sessionStorage.getItem('routeOrigin');
     const destination = sessionStorage.getItem('routeDestination');
     const amount = sessionStorage.getItem('tollAmount');
@@ -91,7 +91,7 @@ function initPaymentPage() {
         document.getElementById('payment-amount').textContent = amount;
     }
 
-    // Default select first method
+    
     const firstMethod = document.querySelector('.payment-method');
     if (firstMethod) {
         selectPaymentMethod(firstMethod.querySelector('.payment-name').textContent.toLowerCase(), firstMethod);
@@ -113,7 +113,7 @@ function selectPaymentMethod(method, el) {
     }
     document.getElementById('selected-payment').value = method;
     
-    // Show payment details
+    
     const paymentDetails = document.getElementById('payment-details');
     if (paymentDetails) {
         paymentDetails.classList.remove('hidden');
