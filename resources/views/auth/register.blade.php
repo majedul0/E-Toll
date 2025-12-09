@@ -68,7 +68,7 @@
                     id="password"
                     name="password"
                     class="form-input"
-                    placeholder="Create a strong password"
+                    placeholder="strong password required"
                     required
                 >
             </div>
