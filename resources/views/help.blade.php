@@ -37,8 +37,8 @@
         
         <div style="margin-top: 2rem;">
             <p style="margin-bottom: 1rem;"><strong>Phone:</strong> 16500</p>
-            <p style="margin-bottom: 1rem;"><strong>Email:</strong> support@etoll.gov.bd</p>
-            <p style="margin-bottom: 1rem;"><strong>Office Hours:</strong> 9:00 AM - 5:00 PM (Saturday - Thursday)</p>
+            <p style="margin-bottom: 1rem;"><strong>Email:</strong> jeon@etoll.gov.bd</p>
+            <p style="margin-bottom: 1rem;"><strong>Office Hours:</strong> 8:30 AM - 5:00 PM (Saturday to Thursday)</p>
         </div>
     </div>
 </div>
