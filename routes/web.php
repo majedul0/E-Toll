@@ -40,7 +40,7 @@ Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'su
 Route::match(['get', 'post'], '/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
 Route::match(['get', 'post'], '/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
-// Official-only area
+// Official-only area here
 Route::middleware(['auth', 'official'])->group(function () {
     Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
 });
