@@ -108,10 +108,8 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
 ('0001_01_01_000001_create_cache_table', 1),
 ('0001_01_01_000002_create_jobs_table', 1);
 
--- Seed users
+
 INSERT INTO `users` (`id`, `name`, `phone`, `email`, `nid`, `role`, `official_department`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Demo Citizen', '01711111111', 'citizen@example.com', '1234567890', 'citizen', NULL, NULL, '$2y$10$FP.NAwDgn9cNLyLYTp74/eox3R2OUxPGs44.UyIaOsvT4JMgcqIm.', NULL, NOW(), NOW()),
 (2, 'Toll Official', '01700000000', 'official@etoll.gov.bd', 'OFFICIAL0001', 'official', 'Roads and Highways', NULL, '$2y$10$3wF8KzexlbcguFpWKRu3sutsN8Z/BG6ANxvqvIdXkl14h/ZKgien6', NULL, NOW(), NOW());
-
--- Session table keeps payload JSON; leave empty on import
 
