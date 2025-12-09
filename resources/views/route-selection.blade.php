@@ -112,7 +112,7 @@ function selectRoute() {
     document.getElementById('display-origin').textContent = origin;
     document.getElementById('display-destination').textContent = destination;
     
-    // Calculate toll
+    // Calculate toll & Display amount
     const tollAmount = calculateToll(origin, destination);
     document.getElementById('toll-amount').textContent = '৳' + tollAmount;
     
